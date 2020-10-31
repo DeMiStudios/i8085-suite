@@ -1,0 +1,31 @@
+name: test
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+    if: "!contains(github.event.head_commit.message, '[skip-ci]')"
+    steps:
+      - name: Checkout Git repository
+        uses: actions/checkout@v2
+        with:
+          submodules: true
+      - name: Install Node.js
+        uses: actions/setup-node@v1
+        with:
+          node-version: 14
+      - name: Install Node.js dependencies
+        run: npm install
+      - name: Build project
+        run: npm run build
+      - name: Lint project
+        run: npm run lint
+      - name: Test project
+        run: npm run test
+      - name: Upload coverage
+        run: bash <(curl -s https://codecov.io/bash) -s coverage/ -t "66a34629-50ac-47c4-9b5e-076925666ff3"

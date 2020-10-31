@@ -1,0 +1,16 @@
+{
+	"compilerOptions": {
+		"importsNotUsedAsValues": "error",
+		"incremental": true,
+		"isolatedModules": true,
+		"jsx": "react",
+		"module": "CommonJS",
+		"moduleResolution": "node",
+		"baseUrl": "./src",
+		"outDir": "dist/",
+		"strict": true,
+		"target": "ESNext",
+		"typeRoots": ["node_modules/@types"]
+	},
+	"include": ["src/**/*.ts", "test/**/*.spec.ts"]
+}

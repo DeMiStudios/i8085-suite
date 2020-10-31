@@ -1,0 +1,7 @@
+*.md
+*.yml
+*.js[x]
+/.nyc_output/
+/coverage/
+/node_modules/
+/dist/

@@ -1,0 +1,45 @@
+{
+	"name": "i8085-suite",
+	"version": "1.0.0",
+	"description": "Intel 8085 suite (assembler, disassembler, simulator, and debugger)",
+	"main": "index.js",
+	"scripts": {
+		"build": "npx tsc",
+		"clean": "rm -r dist/",
+		"lint": "npx eslint . && npx prettier --check .",
+		"test": "NODE_PATH=./src npx nyc --reporter=lcov mocha --recursive"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/DeMiStudios/i8085-suite.git"
+	},
+	"keywords": [
+		"intel",
+		"8085",
+		"i8085"
+	],
+	"author": "DeMiStudios",
+	"license": "ISC",
+	"bugs": {
+		"url": "https://github.com/DeMiStudios/i8085-suite/issues"
+	},
+	"homepage": "https://github.com/DeMiStudios/i8085-suite#readme",
+	"dependencies": {
+		"@types/node": "^14.14.7",
+		"typescript": "^4.0.5"
+	},
+	"devDependencies": {
+		"@types/chai": "^4.2.14",
+		"@types/mocha": "^8.0.4",
+		"@typescript-eslint/eslint-plugin": "^4.7.0",
+		"@typescript-eslint/parser": "^4.7.0",
+		"chai": "^4.2.0",
+		"eslint": "^7.13.0",
+		"eslint-config-prettier": "^6.15.0",
+		"eslint-plugin-prettier": "^3.1.4",
+		"mocha": "^8.2.1",
+		"nyc": "^15.1.0",
+		"prettier": "^2.1.2",
+		"ts-node": "^9.0.0"
+	}
+}
