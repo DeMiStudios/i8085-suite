@@ -10,7 +10,11 @@
 		"outDir": "dist/",
 		"strict": true,
 		"target": "ESNext",
-		"typeRoots": ["node_modules/@types"]
+		"typeRoots": ["node_modules/@types"],
+		"paths": {
+			"i8085": ["Shared/i8085"],
+			"Shared/*": ["Shared/*"]
+		}
 	},
 	"include": ["src/**/*.ts", "test/**/*.spec.ts"]
 }

@@ -1,0 +1,7 @@
+export enum Flag {
+	CY = 0x01,
+	P = 0x04,
+	AC = 0x10,
+	Z = 0x40,
+	S = 0x80
+}
