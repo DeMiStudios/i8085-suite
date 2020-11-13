@@ -13,7 +13,8 @@
 		"typeRoots": ["node_modules/@types"],
 		"paths": {
 			"i8085": ["Shared/i8085"],
-			"Shared/*": ["Shared/*"]
+			"Shared/*": ["Shared/*"],
+			"Assembler/*": ["Assembler/*"]
 		}
 	},
 	"include": ["src/**/*.ts", "test/**/*.spec.ts"]

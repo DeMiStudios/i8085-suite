@@ -7,7 +7,7 @@
 		"build": "npx tsc",
 		"clean": "rm -r dist/",
 		"lint": "npx eslint . && npx prettier --check .",
-		"test": "NODE_PATH=./src npx nyc --reporter=lcov mocha --recursive"
+		"test": "NODE_PATH=./src npx nyc --reporter=lcov ava 'test/**/*.spec.ts'"
 	},
 	"repository": {
 		"type": "git",
@@ -29,17 +29,22 @@
 		"typescript": "^4.0.5"
 	},
 	"devDependencies": {
-		"@types/chai": "^4.2.14",
-		"@types/mocha": "^8.0.4",
 		"@typescript-eslint/eslint-plugin": "^4.7.0",
 		"@typescript-eslint/parser": "^4.7.0",
-		"chai": "^4.2.0",
+		"ava": "^3.13.0",
 		"eslint": "^7.13.0",
 		"eslint-config-prettier": "^6.15.0",
 		"eslint-plugin-prettier": "^3.1.4",
-		"mocha": "^8.2.1",
 		"nyc": "^15.1.0",
 		"prettier": "^2.1.2",
 		"ts-node": "^9.0.0"
+	},
+	"ava": {
+		"extensions": [
+			"ts"
+		],
+		"require": [
+			"ts-node/register"
+		]
 	}
 }
