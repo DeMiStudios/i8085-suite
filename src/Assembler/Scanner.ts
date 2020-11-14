@@ -1,5 +1,4 @@
-import i8085 from "i8085";
-import { assert, assertIsDefined } from "Shared/Debug";
+import i8085 from "Shared/i8085";
 import type { Assembler } from "./Assembler";
 import { errors, notes } from "./Diagnostics";
 import { SyntaxKind } from "./SyntaxKind";
@@ -15,10 +14,6 @@ export function scan(state: Assembler): SyntaxKind | undefined {
 
 	if (char) {
 		if (spaceRegexp.test(char)) {
-			if (char === "\r" && peekChar(state, 1) !== "\n") {
-				state.addDiagnostic(notes.expectedLfAfterCR);
-			}
-
 			scanSpace(state);
 			return state.skipTrivia ? scan(state) : SyntaxKind.Space;
 		} else if (terminatorRegexp.test(char)) {
@@ -32,22 +27,15 @@ export function scan(state: Assembler): SyntaxKind | undefined {
 			return SyntaxKind.Delimiter;
 		} else if (intStartRegexp.test(char)) {
 			scanInteger(state);
-			const value = state.getLexeme();
-
-			if (!isValidInteger(value)) {
-				state.addDiagnostic(errors.malformedInteger(value));
-			}
-
 			return SyntaxKind.Integer;
 		} else if (idStartRegexp.test(char)) {
 			scanIdentifier(state);
 			let kind: SyntaxKind;
 			const id = state.getLexeme();
-			const upperId = id.toUpperCase();
 
-			if (i8085.isOpcodeName(upperId)) {
+			if (i8085.isOpcodeName(id.toUpperCase())) {
 				kind = SyntaxKind.Opcode;
-			} else if (i8085.isRegisterName(upperId)) {
+			} else if (i8085.isRegisterName(id.toUpperCase())) {
 				kind = SyntaxKind.Register;
 			} else {
 				kind = SyntaxKind.Identifier;
@@ -79,7 +67,7 @@ export function scan(state: Assembler): SyntaxKind | undefined {
 	}
 }
 
-const spaceRegexp = / \t/;
+const spaceRegexp = /[ \t]/;
 const terminatorRegexp = /[\r\n]/;
 const intStartRegexp = /[0-9]/;
 const intConsumeRegexp = /[a-zA-Z0-9_]/;
@@ -87,7 +75,6 @@ const idStartRegexp = /[a-zA-Z_.]/;
 const idPartRegexp = /[a-zA-Z0-9_.]/;
 
 function scanSpace(state: Assembler): void {
-	assert(spaceRegexp.test(peekChar(state) ?? ""));
 	let char = nextChar(state);
 
 	while (char && spaceRegexp.test(char)) {
@@ -96,16 +83,20 @@ function scanSpace(state: Assembler): void {
 }
 
 function scanTerminator(state: Assembler): void {
-	assert(terminatorRegexp.test(peekChar(state) ?? ""));
-	let char = nextChar(state);
+	if (peekChar(state) === "\r") {
+		nextChar(state);
 
-	while (char && terminatorRegexp.test(char)) {
-		char = nextChar(state);
+		if (peekChar(state) !== "\n") {
+			state.addDiagnostic(notes.expectedLfAfterCR);
+		} else {
+			nextChar(state);
+		}
+	} else {
+		nextChar(state);
 	}
 }
 
 function scanComment(state: Assembler): void {
-	assert(peekChar(state) === ";");
 	let char = nextChar(state);
 
 	while (char && !terminatorRegexp.test(char)) {
@@ -114,16 +105,18 @@ function scanComment(state: Assembler): void {
 }
 
 function scanInteger(state: Assembler) {
-	assert(intStartRegexp.test(peekChar(state) ?? ""));
 	let char = nextChar(state);
 
 	while (char && intConsumeRegexp.test(char)) {
 		char = nextChar(state);
 	}
+
+	if (!isValidInteger(state.getLexeme())) {
+		state.addDiagnostic(errors.malformedInteger(state.getLexeme()));
+	}
 }
 
 function scanIdentifier(state: Assembler) {
-	assert(idStartRegexp.test(peekChar(state) ?? ""));
 	let char = nextChar(state);
 
 	while (char && idPartRegexp.test(char)) {
@@ -136,8 +129,6 @@ function peekChar(state: Assembler, offset = 0): string | undefined {
 }
 
 function nextChar(state: Assembler) {
-	const char = peekChar(state);
-	assertIsDefined(char);
 	state.position += 1;
 	return peekChar(state);
 }

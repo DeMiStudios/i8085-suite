@@ -28,7 +28,7 @@ export class Assembler {
 		this.source = properties?.source ?? readFileSync(file, "utf8");
 		this.lineMap = this.debug ? generateLineMap(this.source) : [];
 		this.diagnostics = [];
-		this.skipTrivia = properties?.skipTrivia ?? false;
+		this.skipTrivia = properties?.skipTrivia ?? true;
 	}
 
 	public addDiagnostic(factory: DiagnosticFactory): void {
@@ -41,15 +41,13 @@ export class Assembler {
 		}
 	}
 
-	private formatDiagnostic(diagnostic: Diagnostic): string {
-		let prefix = "";
-
+	public formatDiagnostic(diagnostic: Diagnostic): string {
 		if (this.debug && isDiagnosticWithLocation(diagnostic)) {
 			const [line, column] = getLineAndColumnOfPosition(this.lineMap, diagnostic.position);
-			prefix = `${diagnostic.file}:${line + 1}:${column + 1}: `;
+			return `${diagnostic.file}:${line + 1}:${column + 1}: ${getDiagnosticMessage(diagnostic)}`;
+		} else {
+			return getDiagnosticMessage(diagnostic);
 		}
-
-		return `${prefix}${getDiagnosticMessage(diagnostic)}`;
 	}
 
 	public getLexeme(): string {

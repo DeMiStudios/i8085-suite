@@ -1,7 +1,7 @@
 import { parseInteger } from "Assembler/utility/Integer";
 import test from "ava";
 
-test("Integer utility", t => {
+test("isValidInteger() and parseInteger()", t => {
 	// no prefix/suffix
 	t.is(parseInteger("0"), 0);
 	t.is(parseInteger("999"), 999);

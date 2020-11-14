@@ -2,7 +2,7 @@ Source = { { Trivia } Statement } { Trivia };
 
 Trivia = Space | Terminator | Comment;
 Space = "[ \t]+";
-Terminator = "[\r\n]+";
+Terminator = "\r?\n";
 Comment = ";[^\r\n]+";
 
 Statement = Instruction | Label;
