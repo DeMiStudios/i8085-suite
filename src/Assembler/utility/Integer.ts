@@ -32,11 +32,11 @@ export function parseInteger(value: string): number | undefined {
 		}
 
 		if (suffix) {
-			result = parseInt(value.substr(0, value.length - 1).replaceAll("_", ""), getRadixFromModifier(suffix));
+			result = parseInt(value.substr(0, value.length - 1).replace(/_/g, ""), getRadixFromModifier(suffix));
 		} else if (prefix && !suffix) {
-			result = parseInt(value.substr(2).replaceAll("_", ""), getRadixFromModifier(prefix));
+			result = parseInt(value.substr(2).replace(/_/g, ""), getRadixFromModifier(prefix));
 		} else {
-			result = parseInt(value.replaceAll("_", ""), 10);
+			result = parseInt(value.replace(/_/g, ""), 10);
 		}
 
 		assert(!Number.isNaN(result));
