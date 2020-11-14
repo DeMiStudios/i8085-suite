@@ -21,18 +21,17 @@ export function generateLineMap(source: string): LineMap {
 /** 0-based line, position is a non-negative integer */
 export function getLineOfPosition(lineMap: LineMap, position: number): number {
 	let i = 0;
-	let j = lineMap.length - 1;
+	let n = lineMap.length;
 
-	while (i < j) {
-		const k = Math.floor((i + j) / 2);
-		const lineStart = lineMap[k];
+	while (n > 1) {
+		const step = n >> 1;
+		const k = Math.floor(i + step);
 
-		if (i === k) {
-			break;
-		} else if (lineStart <= position) {
+		if (lineMap[k] <= position) {
 			i = k;
+			n -= step;
 		} else {
-			j = k - 1;
+			n = step;
 		}
 	}
 
