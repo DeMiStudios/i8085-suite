@@ -35,8 +35,6 @@ function skipLine(state: AssemblerState) {
 	while (state.getToken() !== TokenKind.EndOfFile && state.getToken() !== TokenKind.Terminator) {
 		scan(state);
 	}
-
-	scan(state);
 }
 
 function parseSource(state: AssemblerState): ast.Source {
@@ -98,6 +96,7 @@ function parseStatement(state: AssemblerState): ast.Statement {
 					} else {
 						state.addDiagnostic(errors.expectedExpression(state.getToken()));
 						failure = true;
+						break;
 					}
 				}
 			} else {
@@ -106,22 +105,23 @@ function parseStatement(state: AssemblerState): ast.Statement {
 			}
 		}
 
-		if (!failure) {
-			if (state.getToken() === TokenKind.Comment) {
-				scan(state);
-			}
+		let length: number;
 
-			if (state.getToken() !== TokenKind.EndOfFile) {
-				expect(state, TokenKind.Terminator);
+		if (!failure) {
+			length = state.getTokenPosition() - identifier.position;
+
+			if (state.getToken() === TokenKind.Comment) {
 				scan(state);
 			}
 		} else {
 			skipLine(state);
+			length = state.getTokenPosition() - identifier.position;
+			scan(state);
 		}
 
 		return ast.createNode(SyntaxKind.Instruction, {
 			position: identifier.position,
-			length: state.getTokenPosition() - identifier.position,
+			length: length,
 			target: identifier,
 			operands: ast.createList(operands)
 		});

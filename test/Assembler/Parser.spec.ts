@@ -26,7 +26,7 @@ test("parse() - no diagnostics", t => {
 			}),
 			ast.createNode(SyntaxKind.Instruction, {
 				position: 18,
-				length: 11,
+				length: 10,
 				target: ast.createNode(SyntaxKind.Identifier, {
 					position: 18,
 					length: 3,
@@ -72,7 +72,7 @@ test("parse() - with diagnostics", t => {
 			statements: ast.createList([
 				ast.createNode(SyntaxKind.Instruction, {
 					position: 0,
-					length: 4,
+					length: 3,
 					target: ast.createNode(SyntaxKind.Identifier, {
 						position: 0,
 						length: 3,
@@ -82,7 +82,7 @@ test("parse() - with diagnostics", t => {
 				}),
 				ast.createNode(SyntaxKind.Instruction, {
 					position: 4,
-					length: 6,
+					length: 5,
 					target: ast.createNode(SyntaxKind.Identifier, {
 						position: 4,
 						length: 3,
@@ -92,7 +92,7 @@ test("parse() - with diagnostics", t => {
 				}),
 				ast.createNode(SyntaxKind.Instruction, {
 					position: 12,
-					length: 7,
+					length: 6,
 					target: ast.createNode(SyntaxKind.Identifier, {
 						position: 12,
 						length: 3,
