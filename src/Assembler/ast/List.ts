@@ -2,12 +2,12 @@ import type { Node } from "./Node";
 
 const LIST_MARKER = Symbol("NodeList");
 
-export interface List<T extends Node = Node> {
+export interface List<TNode extends Node = Node> {
 	[LIST_MARKER]: true;
-	nodes: T[];
+	nodes: TNode[];
 }
 
-export function createList<T extends Node>(values: T[] = []): List<T> {
+export function createList<TNode extends Node>(values: TNode[] = []): List<TNode> {
 	return {
 		[LIST_MARKER]: true,
 		nodes: values

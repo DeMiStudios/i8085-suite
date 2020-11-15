@@ -9,16 +9,19 @@ const NODE_MARKER = Symbol("Node");
 export interface Node<T extends SyntaxKind = SyntaxKind> {
 	[NODE_MARKER]: true;
 	kind: T;
-	parent: Node;
+	parent?: Node | undefined;
 	position: number;
 	length: number;
 }
 
 export interface Source extends Node<SyntaxKind.Source> {
+	parent: undefined;
 	statements: List<Statement>;
 }
 
-export type Statement<T extends StatementKind = StatementKind> = Node<T>;
+export interface Statement<TStatement extends StatementKind = StatementKind> extends Node<TStatement> {
+	parent: Source;
+}
 
 export interface Instruction extends Statement<SyntaxKind.Instruction> {
 	target: Identifier;
@@ -30,7 +33,9 @@ export interface Label extends Statement<SyntaxKind.Label> {
 	name: Identifier;
 }
 
-export type Expression<T extends ExpressionKind = ExpressionKind> = Node<T>;
+export interface Expression<TExpression extends ExpressionKind = ExpressionKind> extends Node<TExpression> {
+	parent: Statement | Expression;
+}
 
 export interface Identifier extends Expression<SyntaxKind.Identifier> {
 	text: string;
@@ -76,7 +81,6 @@ export function createNode<T extends keyof NodeByKind>(
 	fields: Omit<NodeByKind[T], typeof NODE_MARKER | "kind" | "parent">
 ): NodeByKind[T] {
 	const node: NodeByKind[T] = { [NODE_MARKER]: true, kind, parent: undefined as never, ...fields } as never;
-	node.parent = node;
 
 	for (const value of Object.values(node)) {
 		if (isNode(value)) {

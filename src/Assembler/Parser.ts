@@ -1,4 +1,3 @@
-import { assertIsDefined } from "Shared/Debug";
 import type { AssemblerState } from "./AssemblerState";
 import ast from "./ast";
 import { errors } from "./Diagnostics";
@@ -142,13 +141,10 @@ function parseIdentifier(state: AssemblerState): ast.Identifier {
 }
 
 function parseInteger(state: AssemblerState): ast.Integer {
-	const value = integer.parseInteger(state.getTokenLexeme());
-	assertIsDefined(value);
-
 	const node = ast.createNode(SyntaxKind.Integer, {
 		position: state.getTokenPosition(),
 		length: state.getTokenLength(),
-		value: value
+		value: integer.parseInteger(state.getTokenLexeme())
 	});
 
 	scan(state);

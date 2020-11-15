@@ -1,4 +1,4 @@
-import { parseInteger } from "Assembler/utility/Integer";
+import { isValidInteger, parseInteger } from "Assembler/utility/Integer";
 import test from "ava";
 
 test("isValidInteger() and parseInteger()", t => {
@@ -34,9 +34,9 @@ test("isValidInteger() and parseInteger()", t => {
 	t.is(parseInteger("0dh"), 13);
 
 	// malformed cases
-	t.is(parseInteger(""), undefined);
-	t.is(parseInteger(" "), undefined);
-	t.is(parseInteger("_"), undefined);
-	t.is(parseInteger("a"), undefined);
-	t.is(parseInteger("fh"), undefined);
+	t.is(isValidInteger(""), false);
+	t.is(isValidInteger(" "), false);
+	t.is(isValidInteger("_"), false);
+	t.is(isValidInteger("a"), false);
+	t.is(isValidInteger("fh"), false);
 });
