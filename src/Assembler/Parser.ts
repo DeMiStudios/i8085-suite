@@ -13,12 +13,6 @@ export function parse(state: AssemblerState): ast.Source {
 	return tree;
 }
 
-function expect(state: AssemblerState, kind: TokenKind) {
-	if (state.getToken() !== kind) {
-		state.addDiagnostic(errors.expectedToken(kind, state.getToken()));
-	}
-}
-
 function skipSpace(state: AssemblerState) {
 	while (state.getToken() === TokenKind.Space) {
 		scan(state);
