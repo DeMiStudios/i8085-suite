@@ -8,7 +8,7 @@ import test from "ava";
 import type { Diagnostic } from "Shared/Diagnostic";
 
 test("parse() - no diagnostics", t => {
-	const source = "\nlabel: ; comment\nmvi a, 123 \n";
+	const source = "\nlabel: ; comment\nmvi a, 123 ; comment\n";
 	const state = new AssemblerState("test", { source });
 
 	const expected: ast.Source = ast.createNode(SyntaxKind.Source, {

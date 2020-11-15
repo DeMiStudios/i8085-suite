@@ -37,9 +37,9 @@ export class AssemblerState {
 	public addDiagnostic(factory: DiagnosticFactory): void {
 		const diagnostic = factory(this.file, this.lastPosition, this.position - this.lastPosition);
 
-		if (this.debug) {
+		if (diagnostic.category !== DiagnosticCategory.Error || this.debug) {
 			this.diagnostics.push(diagnostic);
-		} else if (diagnostic.category === DiagnosticCategory.Error) {
+		} else {
 			throw new Error(this.formatDiagnostic(diagnostic));
 		}
 	}

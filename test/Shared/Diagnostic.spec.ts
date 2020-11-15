@@ -7,7 +7,7 @@ import {
 	isDiagnosticWithLocation
 } from "Shared/Diagnostic";
 
-test("diagnosticFactory()", t => {
+test("createDiagnosticFactory()", t => {
 	const factory = createDiagnosticFactory(DiagnosticCategory.Note, "note message");
 	const diagnostic = factory("test", 0, 5);
 
