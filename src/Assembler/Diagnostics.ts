@@ -17,9 +17,6 @@ export const errors = {
 		createDiagnosticFactory(DiagnosticCategory.Error, `malformed integer '${value}'`),
 
 	// Parser diagnostics
-	expectedToken: (kind: TokenKind, got: TokenKind): DiagnosticFactory =>
-		createDiagnosticFactory(DiagnosticCategory.Error, `expected '${TokenKind[kind]}', got '${TokenKind[got]}'`),
-
 	expectedStatement: (got: TokenKind): DiagnosticFactory =>
 		createDiagnosticFactory(DiagnosticCategory.Error, `expected statement, got '${TokenKind[got]}'`),
 

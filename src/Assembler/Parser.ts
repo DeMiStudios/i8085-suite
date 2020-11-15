@@ -3,7 +3,7 @@ import ast from "./ast";
 import { errors } from "./Diagnostics";
 import { scan } from "./Scanner";
 import { SyntaxKind } from "./SyntaxKind";
-import { isTriviaKind, TokenKind } from "./TokenKind";
+import { isTriviaTokenKind, TokenKind } from "./TokenKind";
 import * as integer from "./utility/Integer";
 
 export function parse(state: AssemblerState): ast.Source {
@@ -20,7 +20,7 @@ function skipSpace(state: AssemblerState) {
 }
 
 function skipTrivia(state: AssemblerState) {
-	while (isTriviaKind(state.getToken())) {
+	while (isTriviaTokenKind(state.getToken())) {
 		scan(state);
 	}
 }
@@ -78,7 +78,7 @@ function parseStatement(state: AssemblerState): ast.Statement {
 		const operands: ast.Expression[] = [];
 		let failure = false;
 
-		if (state.getToken() !== TokenKind.EndOfFile && !isTriviaKind(state.getToken())) {
+		if (state.getToken() !== TokenKind.EndOfFile && !isTriviaTokenKind(state.getToken())) {
 			if (isExpressionStart(state.getToken())) {
 				operands.push(parseExpression(state));
 				length = state.getTokenPosition() - identifier.position;

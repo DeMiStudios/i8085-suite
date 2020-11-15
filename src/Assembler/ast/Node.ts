@@ -32,12 +32,12 @@ export interface Label extends Statement<SyntaxKind.Label> {
 
 export type Expression<T extends ExpressionKind = ExpressionKind> = Node<T>;
 
-export interface Integer extends Expression<SyntaxKind.Integer> {
-	value: number;
-}
-
 export interface Identifier extends Expression<SyntaxKind.Identifier> {
 	text: string;
+}
+
+export interface Integer extends Expression<SyntaxKind.Integer> {
+	value: number;
 }
 
 export function isNode(value: unknown): value is Node {
@@ -56,20 +56,19 @@ export function isInstruction(value: Node): value is Instruction {
 	return value.kind === SyntaxKind.Instruction;
 }
 
+export function isLabel(value: Node): value is Label {
+	return value.kind === SyntaxKind.Label;
+}
 export function isExpression(value: Node): value is Expression {
 	return isExpressionKind(value.kind);
-}
-
-export function isInteger(value: Node): value is Integer {
-	return value.kind === SyntaxKind.Integer;
 }
 
 export function isIdentifier(value: Node): value is Identifier {
 	return value.kind === SyntaxKind.Identifier;
 }
 
-export function isLabel(value: Node): value is Label {
-	return value.kind === SyntaxKind.Label;
+export function isInteger(value: Node): value is Integer {
+	return value.kind === SyntaxKind.Integer;
 }
 
 export function createNode<T extends keyof NodeByKind>(

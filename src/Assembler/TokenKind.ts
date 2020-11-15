@@ -15,18 +15,18 @@ export enum TokenKind {
 	Colon
 }
 
-export type TriviaKind = TokenKind.Space | TokenKind.Terminator | TokenKind.Comment;
-export type LiteralKind = TokenKind.Identifier | TokenKind.Integer;
-export type PunctuatorKind = TokenKind.Delimiter | TokenKind.Colon;
+export type TriviaTokenKind = TokenKind.Space | TokenKind.Terminator | TokenKind.Comment;
+export type LiteralTokenKind = TokenKind.Identifier | TokenKind.Integer;
+export type PunctuatorTokenKind = TokenKind.Delimiter | TokenKind.Colon;
 
-export function isTriviaKind(kind: TokenKind): kind is TriviaKind {
+export function isTriviaTokenKind(kind: TokenKind): kind is TriviaTokenKind {
 	return kind === TokenKind.Space || kind === TokenKind.Terminator || kind === TokenKind.Comment;
 }
 
-export function isLiteralKind(kind: TokenKind): kind is LiteralKind {
+export function isLiteralTokenKind(kind: TokenKind): kind is LiteralTokenKind {
 	return kind === TokenKind.Identifier || kind === TokenKind.Integer;
 }
 
-export function isPunctuatorKind(kind: TokenKind): kind is PunctuatorKind {
+export function isPunctuatorTokenKind(kind: TokenKind): kind is PunctuatorTokenKind {
 	return kind === TokenKind.Delimiter || kind === TokenKind.Colon;
 }
