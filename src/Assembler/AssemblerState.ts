@@ -53,6 +53,10 @@ export class AssemblerState {
 		}
 	}
 
+	public getCursorPosition(): number {
+		return this.position;
+	}
+
 	public getToken(): TokenKind {
 		return this.token;
 	}

@@ -16,8 +16,6 @@ export function parse(state: AssemblerState): ast.Source {
 function expect(state: AssemblerState, kind: TokenKind) {
 	if (state.getToken() !== kind) {
 		state.addDiagnostic(errors.expectedToken(kind, state.getToken()));
-	} else {
-		scan(state);
 	}
 }
 
@@ -33,18 +31,32 @@ function skipTrivia(state: AssemblerState) {
 	}
 }
 
+function skipLine(state: AssemblerState) {
+	while (state.getToken() !== TokenKind.EndOfFile && state.getToken() !== TokenKind.Terminator) {
+		scan(state);
+	}
+
+	scan(state);
+}
+
 function parseSource(state: AssemblerState): ast.Source {
 	const position = state.getTokenPosition();
 	const statements: ast.Statement[] = [];
 	skipTrivia(state);
 
-	while (isStatementStart(state.getToken())) {
-		const node = parseStatement(state);
-		statements.push(node);
+	while (state.getToken() !== TokenKind.EndOfFile) {
+		if (isStatementStart(state.getToken())) {
+			const node = parseStatement(state);
+			statements.push(node);
+		} else {
+			state.addDiagnostic(errors.expectedStatement(state.getToken()));
+			skipLine(state);
+		}
+
 		skipTrivia(state);
 	}
 
-	expect(state, TokenKind.EndOfFile);
+	scan(state); // skip EndOfFile
 
 	return ast.createNode(SyntaxKind.Source, {
 		position: position,
@@ -68,41 +80,52 @@ function parseStatement(state: AssemblerState): ast.Statement {
 		});
 	} else {
 		// Instruction
-		const operands = parseOperands(state);
+		const operands: ast.Expression[] = [];
+		let failure = false;
 
-		if (state.getToken() === TokenKind.Comment) {
-			scan(state);
+		if (state.getToken() !== TokenKind.EndOfFile && !isTriviaKind(state.getToken())) {
+			if (isExpressionStart(state.getToken())) {
+				operands.push(parseExpression(state));
+				skipSpace(state);
+
+				while (state.getToken() === TokenKind.Delimiter) {
+					scan(state);
+					skipSpace(state);
+
+					if (isExpressionStart(state.getToken())) {
+						operands.push(parseExpression(state));
+						skipSpace(state);
+					} else {
+						state.addDiagnostic(errors.expectedExpression(state.getToken()));
+						failure = true;
+					}
+				}
+			} else {
+				state.addDiagnostic(errors.expectedExpression(state.getToken()));
+				failure = true;
+			}
 		}
 
-		if (state.getToken() !== TokenKind.EndOfFile) {
-			expect(state, TokenKind.Terminator);
+		if (!failure) {
+			if (state.getToken() === TokenKind.Comment) {
+				scan(state);
+			}
+
+			if (state.getToken() !== TokenKind.EndOfFile) {
+				expect(state, TokenKind.Terminator);
+				scan(state);
+			}
+		} else {
+			skipLine(state);
 		}
 
 		return ast.createNode(SyntaxKind.Instruction, {
 			position: identifier.position,
 			length: state.getTokenPosition() - identifier.position,
 			target: identifier,
-			operands: operands
+			operands: ast.createList(operands)
 		});
 	}
-}
-
-function parseOperands(state: AssemblerState): ast.List<ast.Expression> {
-	const operands: ast.Expression[] = [];
-
-	if (isExpressionStart(state.getToken())) {
-		operands.push(parseExpression(state));
-		skipSpace(state);
-
-		while (state.getToken() === TokenKind.Delimiter) {
-			scan(state);
-			skipSpace(state);
-			operands.push(parseExpression(state));
-			skipSpace(state);
-		}
-	}
-
-	return ast.createList(operands);
 }
 
 function parseIdentifier(state: AssemblerState): ast.Identifier {
