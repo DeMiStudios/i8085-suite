@@ -10,9 +10,6 @@ export const errors = {
 	unexpectedCharacter: (character: string): DiagnosticFactory =>
 		diagnosticFactory(DiagnosticCategory.Error, `unexpected character '${escape(character)}'`),
 
-	badLabelName: (name: string): DiagnosticFactory =>
-		diagnosticFactory(DiagnosticCategory.Error, `bad label name '${escape(name)}'`),
-
 	malformedInteger: (value: string): DiagnosticFactory =>
 		diagnosticFactory(DiagnosticCategory.Error, `malformed integer '${escape(value)}'`)
 };

@@ -1,18 +1,18 @@
 export type LineMap = readonly number[];
 
 export function generateLineMap(source: string): LineMap {
-	let pos = 0;
-	let char = source[pos];
+	let position = 0;
+	let char = source[position];
 	const lineMap = [0];
 
 	while (char) {
-		pos += 1;
+		position += 1;
 
 		if (char === "\n") {
-			lineMap.push(pos);
+			lineMap.push(position);
 		}
 
-		char = source[pos];
+		char = source[position];
 	}
 
 	return lineMap;

@@ -1,59 +1,34 @@
-import i8085 from "Shared/i8085";
-import type { Assembler } from "./Assembler";
+import type { AssemblerState } from "./AssemblerState";
 import { errors, notes } from "./Diagnostics";
-import { SyntaxKind } from "./SyntaxKind";
+import { TokenKind } from "./TokenKind";
 import { isValidInteger } from "./utility/Integer";
 
-/**
- * Advances the scanner's state.
- * @returns The syntax kind, or `undefined` on end of file.
- */
-export function scan(state: Assembler): SyntaxKind | undefined {
-	const char = peekChar(state);
+export function scan(state: AssemblerState): TokenKind {
+	const char = state.source[state.position];
 	state.lastPosition = state.position;
 
 	if (char) {
-		if (spaceRegexp.test(char)) {
+		if (char in punctuators) {
+			++state.position;
+			state.token = punctuators[char];
+		} else if (spaceRegexp.test(char)) {
 			scanSpace(state);
-			return state.skipTrivia ? scan(state) : SyntaxKind.Space;
+			state.token = TokenKind.Space;
 		} else if (terminatorRegexp.test(char)) {
 			scanTerminator(state);
-			return state.skipTrivia ? scan(state) : SyntaxKind.Terminator;
+			state.token = TokenKind.Terminator;
 		} else if (char === ";") {
 			scanComment(state);
-			return state.skipTrivia ? scan(state) : SyntaxKind.Comment;
-		} else if (char === ",") {
-			nextChar(state);
-			return SyntaxKind.Delimiter;
+			state.token = TokenKind.Comment;
 		} else if (intStartRegexp.test(char)) {
 			scanInteger(state);
-			return SyntaxKind.Integer;
+			state.token = TokenKind.Integer;
+			return TokenKind.Integer;
 		} else if (idStartRegexp.test(char)) {
 			scanIdentifier(state);
-			let kind: SyntaxKind;
-			const id = state.getLexeme();
-
-			if (i8085.isOpcodeName(id.toUpperCase())) {
-				kind = SyntaxKind.Opcode;
-			} else if (i8085.isRegisterName(id.toUpperCase())) {
-				kind = SyntaxKind.Register;
-			} else {
-				kind = SyntaxKind.Identifier;
-			}
-
-			if (peekChar(state) === ":") {
-				nextChar(state);
-
-				if (kind !== SyntaxKind.Identifier) {
-					state.addDiagnostic(errors.badLabelName(id));
-				}
-
-				kind = SyntaxKind.Label;
-			}
-
-			return kind;
+			state.token = TokenKind.Identifier;
 		} else {
-			nextChar(state);
+			state.position += 1;
 			state.addDiagnostic(errors.unexpectedCharacter(char));
 			return scan(state);
 		}
@@ -62,73 +37,71 @@ export function scan(state: Assembler): SyntaxKind | undefined {
 			state.addDiagnostic(notes.expectedFinalNewline);
 		}
 
+		state.token = TokenKind.EndOfFile;
 		state.eofReached = true;
-		return undefined;
 	}
+
+	return state.token;
 }
+
+const punctuators: { readonly [index: string]: TokenKind } = {
+	",": TokenKind.Delimiter,
+	":": TokenKind.Colon
+} as const;
 
 const spaceRegexp = /[ \t]/;
 const terminatorRegexp = /[\r\n]/;
-const intStartRegexp = /[0-9]/;
-const intConsumeRegexp = /[a-zA-Z0-9_]/;
 const idStartRegexp = /[a-zA-Z_.]/;
 const idPartRegexp = /[a-zA-Z0-9_.]/;
+const intStartRegexp = /[0-9]/;
+const intConsumeRegexp = /[a-zA-Z0-9_]/;
 
-function scanSpace(state: Assembler): void {
-	let char = nextChar(state);
+function scanSpace(state: AssemblerState): void {
+	let char = state.source[++state.position];
 
 	while (char && spaceRegexp.test(char)) {
-		char = nextChar(state);
+		char = state.source[++state.position];
 	}
 }
 
-function scanTerminator(state: Assembler): void {
-	if (peekChar(state) === "\r") {
-		nextChar(state);
+function scanTerminator(state: AssemblerState): void {
+	if (state.source[state.position] === "\r") {
+		++state.position;
 
-		if (peekChar(state) !== "\n") {
+		if (state.source[state.position] !== "\n") {
 			state.addDiagnostic(notes.expectedLfAfterCR);
 		} else {
-			nextChar(state);
+			++state.position;
 		}
 	} else {
-		nextChar(state);
+		++state.position;
 	}
 }
 
-function scanComment(state: Assembler): void {
-	let char = nextChar(state);
+function scanComment(state: AssemblerState): void {
+	let char = state.source[++state.position];
 
 	while (char && !terminatorRegexp.test(char)) {
-		char = nextChar(state);
+		char = state.source[++state.position];
 	}
 }
 
-function scanInteger(state: Assembler) {
-	let char = nextChar(state);
-
-	while (char && intConsumeRegexp.test(char)) {
-		char = nextChar(state);
-	}
-
-	if (!isValidInteger(state.getLexeme())) {
-		state.addDiagnostic(errors.malformedInteger(state.getLexeme()));
-	}
-}
-
-function scanIdentifier(state: Assembler) {
-	let char = nextChar(state);
+function scanIdentifier(state: AssemblerState) {
+	let char = state.source[++state.position];
 
 	while (char && idPartRegexp.test(char)) {
-		char = nextChar(state);
+		char = state.source[++state.position];
 	}
 }
 
-function peekChar(state: Assembler, offset = 0): string | undefined {
-	return state.source[state.position + offset];
-}
+function scanInteger(state: AssemblerState) {
+	let char = state.source[++state.position];
 
-function nextChar(state: Assembler) {
-	state.position += 1;
-	return peekChar(state);
+	while (char && intConsumeRegexp.test(char)) {
+		char = state.source[++state.position];
+	}
+
+	if (!isValidInteger(state.getTokenLexeme())) {
+		state.addDiagnostic(errors.malformedInteger(state.getTokenLexeme()));
+	}
 }

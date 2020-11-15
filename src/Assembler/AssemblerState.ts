@@ -1,26 +1,28 @@
 import { readFileSync } from "fs";
 import type { Diagnostic, DiagnosticFactory } from "Shared/Diagnostic";
 import { DiagnosticCategory, getDiagnosticMessage, isDiagnosticWithLocation } from "Shared/Diagnostic";
+import { TokenKind } from "./TokenKind";
 import type { LineMap } from "./utility/LineMap";
 import { generateLineMap, getLineAndColumnOfPosition } from "./utility/LineMap";
 
-export class Assembler {
+export class AssemblerState {
 	public readonly file: string;
 	public readonly debug: boolean;
 	public readonly source: string;
 	public readonly lineMap: LineMap;
-	public readonly skipTrivia: boolean;
 	public readonly diagnostics: Diagnostic[] = [];
-	/** @internal */ public position = 0;
-	/** @internal */ public lastPosition = 0;
-	/** @internal */ public eofReached = false;
+	/** @internal Scanner */ public position = 0;
+	/** @internal Scanner */ public lastPosition = 0;
+	/** @internal Scanner */ public eofReached = false;
+	/** @internal Scanner */ public token: TokenKind = TokenKind.EndOfFile;
 
 	public constructor(
 		file: string,
 		properties?: {
+			/** generate line map and save all node children */
 			debug?: boolean;
+			/** source code; file is not read from */
 			source?: string;
-			skipTrivia?: boolean;
 		}
 	) {
 		this.file = file;
@@ -28,7 +30,6 @@ export class Assembler {
 		this.source = properties?.source ?? readFileSync(file, "utf8");
 		this.lineMap = this.debug ? generateLineMap(this.source) : [];
 		this.diagnostics = [];
-		this.skipTrivia = properties?.skipTrivia ?? true;
 	}
 
 	public addDiagnostic(factory: DiagnosticFactory): void {
@@ -50,7 +51,19 @@ export class Assembler {
 		}
 	}
 
-	public getLexeme(): string {
+	public getToken(): TokenKind {
+		return this.token;
+	}
+
+	public getTokenPosition(): number {
+		return this.lastPosition;
+	}
+
+	public getTokenLength(): number {
+		return this.position - this.lastPosition;
+	}
+
+	public getTokenLexeme(): string {
 		return this.source.substring(this.lastPosition, this.position);
 	}
 }
