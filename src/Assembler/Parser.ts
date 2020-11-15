@@ -1,3 +1,4 @@
+import { assertIsDefined } from "Shared/Debug";
 import type { AssemblerState } from "./AssemblerState";
 import ast from "./ast";
 import { errors } from "./Diagnostics";
@@ -109,8 +110,12 @@ function parseStatement(state: AssemblerState): ast.Statement {
 				scan(state);
 			}
 
-			if (state.getToken() === TokenKind.Terminator) {
-				scan(state);
+			if (state.getToken() !== TokenKind.EndOfFile) {
+				if (state.getToken() !== TokenKind.Terminator) {
+					state.addDiagnostic(errors.expectedTerminatorAfterInstruction(state.getToken()));
+				} else {
+					scan(state);
+				}
 			}
 		} else {
 			skipLine(state);
@@ -137,10 +142,13 @@ function parseIdentifier(state: AssemblerState): ast.Identifier {
 }
 
 function parseInteger(state: AssemblerState): ast.Integer {
+	const value = integer.parseInteger(state.getTokenLexeme());
+	assertIsDefined(value);
+
 	const node = ast.createNode(SyntaxKind.Integer, {
 		position: state.getTokenPosition(),
 		length: state.getTokenLength(),
-		value: integer.parseInteger(state.getTokenLexeme()) ?? 0
+		value: value
 	});
 
 	scan(state);

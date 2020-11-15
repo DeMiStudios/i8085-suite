@@ -21,5 +21,11 @@ export const errors = {
 		createDiagnosticFactory(DiagnosticCategory.Error, `expected statement, got '${TokenKind[got]}'`),
 
 	expectedExpression: (got: TokenKind): DiagnosticFactory =>
-		createDiagnosticFactory(DiagnosticCategory.Error, `expected expression, got '${TokenKind[got]}'`)
+		createDiagnosticFactory(DiagnosticCategory.Error, `expected expression, got '${TokenKind[got]}'`),
+
+	expectedTerminatorAfterInstruction: (got: TokenKind): DiagnosticFactory =>
+		createDiagnosticFactory(
+			DiagnosticCategory.Error,
+			`expected '${TokenKind[TokenKind.Terminator]}' after Instruction, got '${TokenKind[got]}'`
+		)
 };

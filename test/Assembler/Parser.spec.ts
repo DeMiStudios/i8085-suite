@@ -1,6 +1,6 @@
 import { AssemblerState } from "Assembler/AssemblerState";
 import ast from "Assembler/ast";
-import { errors } from "Assembler/Diagnostics";
+import { errors, notes } from "Assembler/Diagnostics";
 import { parse } from "Assembler/Parser";
 import { SyntaxKind } from "Assembler/SyntaxKind";
 import { TokenKind } from "Assembler/TokenKind";
@@ -52,14 +52,16 @@ test("parse() - no diagnostics", t => {
 });
 
 test("parse() - with diagnostics", t => {
-	const source = "nop\nmvi ,\n:\nmov a ,\n";
+	const source = "nop\nmvi ,\n:\nmov a ,\ninc a inc b\ninc c";
 	const state = new AssemblerState("test", { source, debug: true });
 	const tree = parse(state);
 
 	const diagnostics: readonly Diagnostic[] = [
 		errors.expectedExpression(TokenKind.Delimiter)("test", 8, 1),
 		errors.expectedStatement(TokenKind.Colon)("test", 10, 1),
-		errors.expectedExpression(TokenKind.Terminator)("test", 19, 1)
+		errors.expectedExpression(TokenKind.Terminator)("test", 19, 1),
+		errors.expectedTerminatorAfterInstruction(TokenKind.Identifier)("test", 26, 3),
+		notes.expectedFinalNewline("test", source.length, 0)
 	];
 
 	t.deepEqual(state.diagnostics, diagnostics);
@@ -103,6 +105,54 @@ test("parse() - with diagnostics", t => {
 							position: 16,
 							length: 1,
 							text: "a"
+						})
+					])
+				}),
+				ast.createNode(SyntaxKind.Instruction, {
+					position: 20,
+					length: 5,
+					target: ast.createNode(SyntaxKind.Identifier, {
+						position: 20,
+						length: 3,
+						text: "inc"
+					}),
+					operands: ast.createList([
+						ast.createNode(SyntaxKind.Identifier, {
+							position: 24,
+							length: 1,
+							text: "a"
+						})
+					])
+				}),
+				ast.createNode(SyntaxKind.Instruction, {
+					position: 26,
+					length: 5,
+					target: ast.createNode(SyntaxKind.Identifier, {
+						position: 26,
+						length: 3,
+						text: "inc"
+					}),
+					operands: ast.createList([
+						ast.createNode(SyntaxKind.Identifier, {
+							position: 30,
+							length: 1,
+							text: "b"
+						})
+					])
+				}),
+				ast.createNode(SyntaxKind.Instruction, {
+					position: 32,
+					length: 5,
+					target: ast.createNode(SyntaxKind.Identifier, {
+						position: 32,
+						length: 3,
+						text: "inc"
+					}),
+					operands: ast.createList([
+						ast.createNode(SyntaxKind.Identifier, {
+							position: 36,
+							length: 1,
+							text: "c"
 						})
 					])
 				})
