@@ -20,7 +20,7 @@ export enum DiagnosticCategory {
 
 export type DiagnosticFactory = (file: string, position: number, length: number) => DiagnosticWithLocation;
 
-export function diagnosticFactory(category: DiagnosticCategory, message: string): DiagnosticFactory {
+export function createDiagnosticFactory(category: DiagnosticCategory, message: string): DiagnosticFactory {
 	return (file, position, length) => ({ category, message, file, position, length });
 }
 

@@ -1,14 +1,14 @@
 import test from "ava";
 import type { Diagnostic } from "Shared/Diagnostic";
 import {
+	createDiagnosticFactory,
 	DiagnosticCategory,
-	diagnosticFactory,
 	getDiagnosticMessage,
 	isDiagnosticWithLocation
 } from "Shared/Diagnostic";
 
 test("diagnosticFactory()", t => {
-	const factory = diagnosticFactory(DiagnosticCategory.Note, "note message");
+	const factory = createDiagnosticFactory(DiagnosticCategory.Note, "note message");
 	const diagnostic = factory("test", 0, 5);
 
 	t.deepEqual(diagnostic, {

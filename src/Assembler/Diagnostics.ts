@@ -1,15 +1,22 @@
 import type { DiagnosticFactory } from "Shared/Diagnostic";
-import { DiagnosticCategory, diagnosticFactory } from "Shared/Diagnostic";
+import { createDiagnosticFactory, DiagnosticCategory } from "Shared/Diagnostic";
+import { TokenKind } from "./TokenKind";
 
 export const notes = {
-	expectedLfAfterCR: diagnosticFactory(DiagnosticCategory.Note, "expected LF (\\n) after CR (\\r)"),
-	expectedFinalNewline: diagnosticFactory(DiagnosticCategory.Note, "expected final newline")
+	expectedLfAfterCR: createDiagnosticFactory(DiagnosticCategory.Note, "expected LF (\\n) after CR (\\r)"),
+	expectedFinalNewline: createDiagnosticFactory(DiagnosticCategory.Note, "expected final newline")
 };
 
 export const errors = {
 	unexpectedCharacter: (character: string): DiagnosticFactory =>
-		diagnosticFactory(DiagnosticCategory.Error, `unexpected character '${escape(character)}'`),
+		createDiagnosticFactory(DiagnosticCategory.Error, `unexpected character '${character}'`),
 
 	malformedInteger: (value: string): DiagnosticFactory =>
-		diagnosticFactory(DiagnosticCategory.Error, `malformed integer '${escape(value)}'`)
+		createDiagnosticFactory(DiagnosticCategory.Error, `malformed integer '${value}'`),
+
+	expectedToken: (kind: TokenKind, got: TokenKind): DiagnosticFactory =>
+		createDiagnosticFactory(DiagnosticCategory.Error, `expected '${TokenKind[kind]}', got '${TokenKind[got]}'`),
+
+	expectedStatement: (got: TokenKind): DiagnosticFactory =>
+		createDiagnosticFactory(DiagnosticCategory.Error, `expected statement, got '${TokenKind[got]}'`)
 };

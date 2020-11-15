@@ -1,0 +1,15 @@
+Source = { Trivia } { Statement { Trivia } } EndOfFile;
+
+Trivia = Space | Terminator | Comment;
+
+Statement = Instruction | Label;
+
+Instruction = Identifier [Space] [Expression [Space] { Delimiter [Space] Expression [Space] }] [Comment] Terminator;
+
+Label = Identifier [Space] Colon;
+
+Expression = Identifier | Integer;
+
+Identifier = ? lexical-rules: Identifier ;
+
+Integer = ? lexical-rules: Integer ?;

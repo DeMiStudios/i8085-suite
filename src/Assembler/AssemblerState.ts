@@ -1,6 +1,7 @@
 import { readFileSync } from "fs";
 import type { Diagnostic, DiagnosticFactory } from "Shared/Diagnostic";
 import { DiagnosticCategory, getDiagnosticMessage, isDiagnosticWithLocation } from "Shared/Diagnostic";
+import type ast from "./ast";
 import { TokenKind } from "./TokenKind";
 import type { LineMap } from "./utility/LineMap";
 import { generateLineMap, getLineAndColumnOfPosition } from "./utility/LineMap";
@@ -15,6 +16,7 @@ export class AssemblerState {
 	/** @internal Scanner */ public lastPosition = 0;
 	/** @internal Scanner */ public eofReached = false;
 	/** @internal Scanner */ public token: TokenKind = TokenKind.EndOfFile;
+	/** @internal Parser */ public tree: ast.Source | undefined;
 
 	public constructor(
 		file: string,
@@ -65,5 +67,9 @@ export class AssemblerState {
 
 	public getTokenLexeme(): string {
 		return this.source.substring(this.lastPosition, this.position);
+	}
+
+	public getSyntaxTree(): ast.Source | undefined {
+		return this.tree;
 	}
 }
