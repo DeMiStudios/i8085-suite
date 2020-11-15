@@ -8,7 +8,7 @@ import test from "ava";
 import type { Diagnostic } from "Shared/Diagnostic";
 
 test("parse() - no diagnostics", t => {
-	const source = "\nlabel: ; comment\nmvi a, 123\n";
+	const source = "\nlabel: ; comment\nmvi a, 123 \n";
 	const state = new AssemblerState("test", { source });
 
 	const expected: ast.Source = ast.createNode(SyntaxKind.Source, {
@@ -52,14 +52,14 @@ test("parse() - no diagnostics", t => {
 });
 
 test("parse() - with diagnostics", t => {
-	const source = "nop\nmvi ,\n:\nmov a,\n";
+	const source = "nop\nmvi ,\n:\nmov a ,\n";
 	const state = new AssemblerState("test", { source, debug: true });
 	const tree = parse(state);
 
 	const diagnostics: readonly Diagnostic[] = [
 		errors.expectedExpression(TokenKind.Delimiter)("test", 8, 1),
 		errors.expectedStatement(TokenKind.Colon)("test", 10, 1),
-		errors.expectedExpression(TokenKind.Terminator)("test", 18, 1)
+		errors.expectedExpression(TokenKind.Terminator)("test", 19, 1)
 	];
 
 	t.deepEqual(state.diagnostics, diagnostics);
@@ -82,7 +82,7 @@ test("parse() - with diagnostics", t => {
 				}),
 				ast.createNode(SyntaxKind.Instruction, {
 					position: 4,
-					length: 5,
+					length: 3,
 					target: ast.createNode(SyntaxKind.Identifier, {
 						position: 4,
 						length: 3,
@@ -92,7 +92,7 @@ test("parse() - with diagnostics", t => {
 				}),
 				ast.createNode(SyntaxKind.Instruction, {
 					position: 12,
-					length: 6,
+					length: 5,
 					target: ast.createNode(SyntaxKind.Identifier, {
 						position: 12,
 						length: 3,

@@ -29,6 +29,8 @@ function skipLine(state: AssemblerState) {
 	while (state.getToken() !== TokenKind.EndOfFile && state.getToken() !== TokenKind.Terminator) {
 		scan(state);
 	}
+
+	scan(state); // skip Terminator
 }
 
 function parseSource(state: AssemblerState): ast.Source {
@@ -59,6 +61,7 @@ function parseSource(state: AssemblerState): ast.Source {
 
 function parseStatement(state: AssemblerState): ast.Statement {
 	const identifier = parseIdentifier(state);
+	let length = state.getTokenPosition() - identifier.position;
 	skipSpace(state);
 
 	if (state.getToken() === TokenKind.Colon) {
@@ -78,6 +81,7 @@ function parseStatement(state: AssemblerState): ast.Statement {
 		if (state.getToken() !== TokenKind.EndOfFile && !isTriviaKind(state.getToken())) {
 			if (isExpressionStart(state.getToken())) {
 				operands.push(parseExpression(state));
+				length = state.getTokenPosition() - identifier.position;
 				skipSpace(state);
 
 				while (state.getToken() === TokenKind.Delimiter) {
@@ -86,6 +90,7 @@ function parseStatement(state: AssemblerState): ast.Statement {
 
 					if (isExpressionStart(state.getToken())) {
 						operands.push(parseExpression(state));
+						length = state.getTokenPosition() - identifier.position;
 						skipSpace(state);
 					} else {
 						state.addDiagnostic(errors.expectedExpression(state.getToken()));
@@ -99,18 +104,16 @@ function parseStatement(state: AssemblerState): ast.Statement {
 			}
 		}
 
-		let length: number;
-
 		if (!failure) {
-			length = state.getTokenPosition() - identifier.position;
-
 			if (state.getToken() === TokenKind.Comment) {
+				scan(state);
+			}
+
+			if (state.getToken() === TokenKind.Terminator) {
 				scan(state);
 			}
 		} else {
 			skipLine(state);
-			length = state.getTokenPosition() - identifier.position;
-			scan(state);
 		}
 
 		return ast.createNode(SyntaxKind.Instruction, {
