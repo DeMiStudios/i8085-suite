@@ -50,8 +50,6 @@ function parseSource(state: AssemblerState): ast.Source {
 		skipTrivia(state);
 	}
 
-	scan(state); // skip EndOfFile
-
 	return ast.createNode(SyntaxKind.Source, {
 		position: position,
 		length: state.getTokenPosition() - position,
