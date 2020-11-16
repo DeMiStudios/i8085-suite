@@ -1,23 +1,22 @@
 import ast from "Assembler/ast";
-import { factory } from "Assembler/ast/Factory";
 import { isInstruction, isLabel } from "Assembler/ast/Node";
 import { SyntaxKind } from "Assembler/SyntaxKind";
 import test from "ava";
 
-const tree = factory.Source({
+const tree = ast.factory.Source({
 	statements: ast.createList([
-		factory.Label({ name: factory.Identifier({ text: "main" }) }),
-		factory.Instruction({
-			target: factory.Identifier({ text: "mov" }),
-			operands: ast.createList([factory.Identifier({ text: "a" }), factory.Identifier({ text: "b" })])
+		ast.factory.Label({ name: ast.factory.Identifier({ text: "main" }) }),
+		ast.factory.Instruction({
+			target: ast.factory.Identifier({ text: "mov" }),
+			operands: ast.createList([ast.factory.Identifier({ text: "a" }), ast.factory.Identifier({ text: "b" })])
 		}),
-		factory.Instruction({
-			target: factory.Identifier({ text: "mvi" }),
-			operands: ast.createList([factory.Identifier({ text: "a" }), factory.Integer({ value: 0x18 })])
+		ast.factory.Instruction({
+			target: ast.factory.Identifier({ text: "mvi" }),
+			operands: ast.createList([ast.factory.Identifier({ text: "a" }), ast.factory.Integer({ value: 0x18 })])
 		}),
-		factory.Instruction({
-			target: factory.Identifier({ text: "mvi" }),
-			operands: ast.createList([factory.Identifier({ text: "b" }), factory.Integer({ value: 0xff })])
+		ast.factory.Instruction({
+			target: ast.factory.Identifier({ text: "mvi" }),
+			operands: ast.createList([ast.factory.Identifier({ text: "b" }), ast.factory.Integer({ value: 0xff })])
 		})
 	])
 });

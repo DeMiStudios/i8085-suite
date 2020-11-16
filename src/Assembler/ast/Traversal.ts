@@ -1,4 +1,5 @@
-import ast from ".";
+import { SyntaxKind } from "Assembler/SyntaxKind";
+import type ast from ".";
 
 export interface Visitor<TReturn = void> {
 	visitSource(source: ast.Source): TReturn;
@@ -9,23 +10,32 @@ export interface Visitor<TReturn = void> {
 }
 
 export function visit<TReturn>(node: ast.Node, visitor: Visitor<TReturn>): TReturn {
-	/* istanbul ignore else */
-	if (ast.isSource(node)) return visitor.visitSource(node);
-	else if (ast.isInstruction(node)) return visitor.visitInstruction(node);
-	else if (ast.isLabel(node)) return visitor.visitLabel(node);
-	else if (ast.isIdentifier(node)) return visitor.visitIdentifier(node);
-	else if (ast.isInteger(node)) return visitor.visitInteger(node);
-	else throw new Error("unknown error");
+	switch (node.kind) {
+		case SyntaxKind.Source:
+			return visitor.visitSource(node as ast.Source);
+		case SyntaxKind.Instruction:
+			return visitor.visitInstruction(node as ast.Instruction);
+		case SyntaxKind.Label:
+			return visitor.visitLabel(node as ast.Label);
+		case SyntaxKind.Identifier:
+			return visitor.visitIdentifier(node as ast.Identifier);
+		case SyntaxKind.Integer:
+			return visitor.visitInteger(node as ast.Integer);
+	}
 }
 
 export function getChildren(node: ast.Node): ast.Node[] {
-	/* istanbul ignore else */
-	if (ast.isSource(node)) return [...node.statements.nodes];
-	else if (ast.isInstruction(node)) return [node.target, ...node.operands.nodes];
-	else if (ast.isLabel(node)) return [node.name];
-	else if (ast.isIdentifier(node)) return [];
-	else if (ast.isInteger(node)) return [];
-	else throw new Error("unknown error");
+	switch (node.kind) {
+		case SyntaxKind.Source:
+			return [...(node as ast.Source).statements.nodes];
+		case SyntaxKind.Instruction:
+			return [(node as ast.Instruction).target, ...(node as ast.Instruction).operands.nodes];
+		case SyntaxKind.Label:
+			return [(node as ast.Label).name];
+		case SyntaxKind.Identifier:
+		case SyntaxKind.Integer:
+			return [];
+	}
 }
 
 export function getAncestor<T extends ast.Node>(node: ast.Node, check: (value: ast.Node) => value is T): T | undefined {
