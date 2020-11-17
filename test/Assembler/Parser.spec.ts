@@ -125,22 +125,6 @@ test("parse() - with diagnostics", t => {
 					])
 				}),
 				ast.createNode(SyntaxKind.Instruction, {
-					position: 26,
-					length: 5,
-					target: ast.createNode(SyntaxKind.Identifier, {
-						position: 26,
-						length: 3,
-						text: "inc"
-					}),
-					operands: ast.createList([
-						ast.createNode(SyntaxKind.Identifier, {
-							position: 30,
-							length: 1,
-							text: "b"
-						})
-					])
-				}),
-				ast.createNode(SyntaxKind.Instruction, {
 					position: 32,
 					length: 5,
 					target: ast.createNode(SyntaxKind.Identifier, {

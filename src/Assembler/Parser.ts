@@ -74,8 +74,10 @@ function parseStatement(state: AssemblerState): ast.Statement {
 	} else {
 		// Instruction
 		const operands: ast.Expression[] = [];
-		let failure = false;
+		let hasMalformedOperand = false;
 
+		// Although an operand is parsed as an expression, an instruction spans an entire line. If there is a
+		// non-expression token, an "expected expression" diagnostic will be created.
 		if (state.getToken() !== TokenKind.EndOfFile && !isTriviaTokenKind(state.getToken())) {
 			if (isExpressionStart(state.getToken())) {
 				operands.push(parseExpression(state));
@@ -91,18 +93,19 @@ function parseStatement(state: AssemblerState): ast.Statement {
 						length = state.getTokenPosition() - identifier.position;
 						skipSpace(state);
 					} else {
-						state.addDiagnostic(errors.expectedExpression(state.getToken()));
-						failure = true;
+						hasMalformedOperand = true;
 						break;
 					}
 				}
 			} else {
-				state.addDiagnostic(errors.expectedExpression(state.getToken()));
-				failure = true;
+				hasMalformedOperand = true;
 			}
 		}
 
-		if (!failure) {
+		if (hasMalformedOperand) {
+			state.addDiagnostic(errors.expectedExpression(state.getToken()));
+			skipLine(state);
+		} else {
 			if (state.getToken() === TokenKind.Comment) {
 				scan(state);
 			}
@@ -110,12 +113,11 @@ function parseStatement(state: AssemblerState): ast.Statement {
 			if (state.getToken() !== TokenKind.EndOfFile) {
 				if (state.getToken() !== TokenKind.Terminator) {
 					state.addDiagnostic(errors.expectedTerminatorAfterInstruction(state.getToken()));
+					skipLine(state);
 				} else {
 					scan(state);
 				}
 			}
-		} else {
-			skipLine(state);
 		}
 
 		return ast.createNode(SyntaxKind.Instruction, {
@@ -124,6 +126,14 @@ function parseStatement(state: AssemblerState): ast.Statement {
 			target: identifier,
 			operands: ast.createList(operands)
 		});
+	}
+}
+
+function parseExpression(state: AssemblerState): ast.Expression {
+	if (state.getToken() === TokenKind.Identifier) {
+		return parseIdentifier(state);
+	} else {
+		return parseInteger(state);
 	}
 }
 
@@ -147,14 +157,6 @@ function parseInteger(state: AssemblerState): ast.Integer {
 
 	scan(state);
 	return node;
-}
-
-function parseExpression(state: AssemblerState): ast.Expression {
-	if (state.getToken() === TokenKind.Identifier) {
-		return parseIdentifier(state);
-	} else {
-		return parseInteger(state);
-	}
 }
 
 function isStatementStart(kind: TokenKind): kind is TokenKind.Identifier {

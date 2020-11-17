@@ -1,5 +1,6 @@
 import type { DiagnosticFactory } from "Shared/Diagnostic";
 import { createDiagnosticFactory, DiagnosticCategory } from "Shared/Diagnostic";
+import { SyntaxKind } from "./SyntaxKind";
 import { TokenKind } from "./TokenKind";
 
 export const notes = {
@@ -26,6 +27,8 @@ export const errors = {
 	expectedTerminatorAfterInstruction: (got: TokenKind): DiagnosticFactory =>
 		createDiagnosticFactory(
 			DiagnosticCategory.Error,
-			`expected '${TokenKind[TokenKind.Terminator]}' after Instruction, got '${TokenKind[got]}'`
+			`expected '${TokenKind[TokenKind.Terminator]}' after '${SyntaxKind[SyntaxKind.Instruction]}', got '${
+				TokenKind[got]
+			}'`
 		)
 };
