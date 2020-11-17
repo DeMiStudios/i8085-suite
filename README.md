@@ -26,8 +26,7 @@ source listing that can be used by the **i8085 debugger**.
 - The **i80805 emulator** can emulate instructions correctly in a duration proportional to the op-code's latency.
 - The **i8085 debugger** supports querying and altering registers and memory, conditional breakpoints, common debugging
 logic (step into, step out, step over, continue), checkpoints, etc.
+- A CLI and a web interface to interact with the suite.
 
 ## Non-Goals
-- Supporting undocumented 8085 instructions is not a goal because various 8085 chips may not have these instructions
-implemented. By supporting only documented instructions, it is *ideally* guaranteed that if the program works within
-this suite then it works on real hardware.
+- Supporting undocumented 8085 instructions and flags.

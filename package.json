@@ -1,7 +1,7 @@
 {
 	"name": "i8085-suite",
 	"version": "1.0.0",
-	"description": "Intel 8085 suite (assembler, disassembler, simulator, and debugger)",
+	"description": "Intel 8085 suite (assembler, disassembler, linker, emulator, and debugger)",
 	"main": "index.js",
 	"scripts": {
 		"build": "npx tsc",
@@ -29,8 +29,8 @@
 		"typescript": "^4.0.5"
 	},
 	"devDependencies": {
-		"@typescript-eslint/eslint-plugin": "^4.7.0",
-		"@typescript-eslint/parser": "^4.7.0",
+		"@typescript-eslint/eslint-plugin": "^4.8.0",
+		"@typescript-eslint/parser": "^4.8.0",
 		"ava": "^3.13.0",
 		"eslint": "^7.13.0",
 		"eslint-config-prettier": "^6.15.0",
