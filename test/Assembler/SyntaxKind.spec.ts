@@ -6,7 +6,7 @@ test("isStatementKind()", t => {
 	const statement: { readonly [K in StatementKind]: true } = {
 		[SyntaxKind.Instruction]: true,
 		[SyntaxKind.Label]: true
-	} as const;
+	};
 
 	for (const kind of Object.values(SyntaxKind)) {
 		if (typeof kind !== "string") {
@@ -19,7 +19,7 @@ test("isExpressionKind()", t => {
 	const expression: { readonly [K in ExpressionKind]: true } = {
 		[SyntaxKind.Identifier]: true,
 		[SyntaxKind.Integer]: true
-	} as const;
+	};
 
 	for (const kind of Object.values(SyntaxKind)) {
 		if (typeof kind !== "string") {

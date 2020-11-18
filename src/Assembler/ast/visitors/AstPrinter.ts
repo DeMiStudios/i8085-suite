@@ -2,7 +2,10 @@ import ast from "..";
 
 export class AstPrinter implements ast.Visitor<string> {
 	public visitSource(source: ast.Source): string {
-		return ast.getChildren(source).reduce((code, node) => `${code}${ast.visit(node, this)}\n`, "");
+		return `${ast
+			.getChildren(source)
+			.map(node => ast.visit(node, this))
+			.join("\n")}\n`;
 	}
 
 	public visitInstruction(instruction: ast.Instruction): string {

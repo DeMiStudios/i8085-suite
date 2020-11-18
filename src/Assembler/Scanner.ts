@@ -9,8 +9,8 @@ export function scan(state: AssemblerState): TokenKind {
 
 	if (char) {
 		if (char in punctuators) {
-			++state.position;
-			state.token = punctuators[char];
+			state.position += 1;
+			state.token = punctuators[char as keyof typeof punctuators];
 		} else if (spaceRegexp.test(char)) {
 			scanSpace(state);
 			state.token = TokenKind.Space;
@@ -23,7 +23,6 @@ export function scan(state: AssemblerState): TokenKind {
 		} else if (intStartRegexp.test(char)) {
 			scanInteger(state);
 			state.token = TokenKind.Integer;
-			return TokenKind.Integer;
 		} else if (idStartRegexp.test(char)) {
 			scanIdentifier(state);
 			state.token = TokenKind.Identifier;
@@ -44,7 +43,7 @@ export function scan(state: AssemblerState): TokenKind {
 	return state.token;
 }
 
-const punctuators: { readonly [index: string]: TokenKind } = {
+const punctuators = {
 	",": TokenKind.Delimiter,
 	":": TokenKind.Colon
 } as const;
@@ -66,15 +65,15 @@ function scanSpace(state: AssemblerState): void {
 
 function scanTerminator(state: AssemblerState): void {
 	if (state.source[state.position] === "\r") {
-		++state.position;
+		state.position += 1;
 
 		if (state.source[state.position] !== "\n") {
 			state.addDiagnostic(notes.expectedLfAfterCR);
 		} else {
-			++state.position;
+			state.position += 1;
 		}
 	} else {
-		++state.position;
+		state.position += 1;
 	}
 }
 

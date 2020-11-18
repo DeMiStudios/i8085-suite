@@ -20,7 +20,7 @@ test("isLiteralKind()", t => {
 	const literal: { readonly [K in LiteralTokenKind]: true } = {
 		[TokenKind.Identifier]: true,
 		[TokenKind.Integer]: true
-	} as const;
+	};
 
 	for (const kind of Object.values(TokenKind)) {
 		if (typeof kind !== "string") {
@@ -33,7 +33,7 @@ test("isPunctuatorKind()", t => {
 	const punctuator: { readonly [K in PunctuatorTokenKind]: true } = {
 		[TokenKind.Delimiter]: true,
 		[TokenKind.Colon]: true
-	} as const;
+	};
 
 	for (const kind of Object.values(TokenKind)) {
 		if (typeof kind !== "string") {

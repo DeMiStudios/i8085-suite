@@ -115,7 +115,7 @@ function createDescriptor(
 	return { group, opcode, format, origin, flags, duration };
 }
 
-const descriptorTable: { [K in Opcode]: OpcodeDescriptor } = {
+const descriptorTable: { readonly [K in Opcode]: OpcodeDescriptor } = {
 	[Opcode.ACI]: createDescriptor(Group.Arithmetic, Opcode.ACI, Format.Data8, 0xce, allFlags, 7),
 	[Opcode.ADC]: createDescriptor(Group.Arithmetic, Opcode.ADC, Format.WordRegister, 0x88, allFlags, [4, 7]),
 	[Opcode.ADD]: createDescriptor(Group.Arithmetic, Opcode.ADD, Format.WordRegister, 0x80, allFlags, [4, 7]),
@@ -196,7 +196,7 @@ const descriptorTable: { [K in Opcode]: OpcodeDescriptor } = {
 	[Opcode.XRA]: createDescriptor(Group.Logical, Opcode.XRA, Format.WordRegister, 0xa8, allFlags, [4, 7]),
 	[Opcode.XRI]: createDescriptor(Group.Logical, Opcode.XRI, Format.Data8, 0xee, allFlags, 7),
 	[Opcode.XTHL]: createDescriptor(Group.Stack, Opcode.XTHL, Format.NoOperands, 0xe3, noFlags, 16)
-} as const;
+};
 
 // prettier-ignore
 const opcodeTable: readonly (Opcode | undefined)[] = [
@@ -232,4 +232,4 @@ const opcodeTable: readonly (Opcode | undefined)[] = [
 	Opcode.RPE, Opcode.PCHL, Opcode.JPE,  Opcode.XCHG, Opcode.CPE, undefined,   Opcode.XRI, Opcode.RST,
 	Opcode.RP,  Opcode.POP,  Opcode.JP,   Opcode.DI,   Opcode.CP,  Opcode.PUSH, Opcode.ORI, Opcode.RST,
 	Opcode.RM,  Opcode.SPHL, Opcode.JM,   Opcode.EI,   Opcode.CM,  undefined,   Opcode.CPI, Opcode.RST
-] as const;
+];

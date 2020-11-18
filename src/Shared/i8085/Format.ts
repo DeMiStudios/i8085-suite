@@ -76,4 +76,4 @@ const operandTable: { readonly [K in Format]: readonly Operand[] } = {
 	[Format.TwoWordRegisters]: [Operand.WordRegister, Operand.WordRegister],
 	[Format.WordRegisterAndData8]: [Operand.WordRegister, Operand.Data8],
 	[Format.PairRegisterAndData16]: [Operand.PairRegister, Operand.Data16]
-} as const;
+};
